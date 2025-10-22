@@ -12,3 +12,8 @@ pydantic-settings==2.1.0
 
 # Python環境
 python-dotenv==1.0.0
+
+# Database
+sqlalchemy==2.0.23
+asyncpg==0.29.0
+alembic==1.13.0
