@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.v1 import chat
+from app.api.v1 import chat, work_orders
 
 # FastAPIアプリケーション
 app = FastAPI(
@@ -33,6 +33,12 @@ app.include_router(
     chat.router,
     prefix="/api/v1/chat",
     tags=["chat"]
+)
+
+app.include_router(
+    work_orders.router,
+    prefix="/api/v1/work-orders",
+    tags=["work-orders"]
 )
 
 
