@@ -161,23 +161,23 @@ export function ChatPage() {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex flex-col h-full bg-[#f7f9fa]">
       {/* Context Header */}
-      <div className="bg-white border-b px-4 py-3 shadow-sm">
+      <div className="bg-white border-b border-gray-100 px-6 py-4 shadow-sm">
         {currentWorkOrder ? (
-          <div>
+          <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900">
+              <h2 className="font-bold text-base text-gray-900">
                 {currentWorkOrder.customer_name} 様
               </h2>
               {currentStep && <Badge variant="info">{currentStep}</Badge>}
             </div>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-gray-500 mt-1.5">
               {currentWorkOrder.model} | {currentWorkOrder.address}
             </p>
           </div>
         ) : (
-          <div className="text-center text-gray-500">
+          <div className="max-w-7xl mx-auto text-center text-gray-500">
             <p className="text-sm">作業案件を選択すると、より的確な回答が得られます</p>
           </div>
         )}
@@ -187,50 +187,52 @@ export function ChatPage() {
       <div
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 py-4"
+        className="flex-1 overflow-y-auto"
       >
-        {messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center">
-            <EmptyState
-              icon="💬"
-              title="AIアシスタントがお手伝いします"
-              description="作業に関する質問や、手順の確認などお気軽にお尋ねください"
-            />
-            {/* Suggested Questions */}
-            <div className="mt-6 w-full max-w-md space-y-2">
-              <p className="text-sm text-gray-600 mb-3">よくある質問:</p>
-              {suggestedQuestions.map((question, index) => (
-                <button
-                  key={index}
-                  onClick={() => setInputText(question)}
-                  className="w-full text-left px-4 py-3 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors text-sm"
-                >
-                  {question}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <>
-            {messages.map((msg, index) => (
-              <ChatMessage
-                key={index}
-                role={msg.role}
-                content={msg.content}
-                timestamp={new Date()}
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          {messages.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center py-12">
+              <EmptyState
+                icon="💬"
+                title="AIアシスタントがお手伝いします"
+                description="作業に関する質問や、手順の確認などお気軽にお尋ねください"
               />
-            ))}
-            {isLoading && <TypingIndicator />}
-            <div ref={messagesEndRef} />
-          </>
-        )}
+              {/* Suggested Questions */}
+              <div className="mt-8 w-full max-w-lg space-y-3">
+                <p className="text-sm text-gray-600 font-medium mb-4">よくある質問:</p>
+                {suggestedQuestions.map((question, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setInputText(question)}
+                    className="w-full text-left px-5 py-4 bg-white border border-gray-200 rounded-xl hover:bg-emerald-50 hover:border-emerald-300 transition-all text-sm shadow-sm hover:shadow-md font-medium"
+                  >
+                    {question}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              {messages.map((msg, index) => (
+                <ChatMessage
+                  key={index}
+                  role={msg.role}
+                  content={msg.content}
+                  timestamp={new Date()}
+                />
+              ))}
+              {isLoading && <TypingIndicator />}
+              <div ref={messagesEndRef} />
+            </>
+          )}
+        </div>
       </div>
 
       {/* Scroll to bottom button */}
       {showScrollButton && (
         <button
           onClick={() => scrollToBottom()}
-          className="absolute bottom-24 right-4 p-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all"
+          className="absolute bottom-24 right-6 p-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg hover:shadow-xl hover:from-emerald-600 hover:to-teal-600 transition-all"
           aria-label="最新のメッセージへスクロール"
         >
           <ArrowDown className="h-5 w-5" />
@@ -246,51 +248,53 @@ export function ChatPage() {
       )}
 
       {/* Input Area */}
-      <div className="bg-white border-t p-4 shadow-lg">
-        <div className="flex gap-2">
-          <div className="flex-1 relative">
-            <textarea
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendText();
-                }
-              }}
-              placeholder="質問を入力... (Shift+Enterで改行)"
-              disabled={isLoading || isRecording}
-              rows={1}
-              className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-              style={{
-                minHeight: '48px',
-                maxHeight: '120px',
-              }}
+      <div className="bg-white border-t border-gray-100 shadow-lg">
+        <div className="max-w-7xl mx-auto px-6 py-5">
+          <div className="flex gap-3">
+            <div className="flex-1 relative">
+              <textarea
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendText();
+                  }
+                }}
+                placeholder="質問を入力... (Shift+Enterで改行)"
+                disabled={isLoading || isRecording}
+                rows={1}
+                className="w-full px-5 py-3.5 pr-12 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed shadow-sm"
+                style={{
+                  minHeight: '52px',
+                  maxHeight: '120px',
+                }}
+              />
+            </div>
+
+            <Button
+              onClick={handleSendText}
+              disabled={isLoading || !inputText.trim() || isRecording}
+              variant="primary"
+              size="lg"
+              className="min-w-[64px] bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-md"
+              aria-label="送信"
+            >
+              <Send className="h-5 w-5" />
+            </Button>
+
+            <VoiceButton
+              isRecording={isRecording}
+              disabled={isLoading}
+              onStart={startRecording}
+              onStop={stopRecording}
             />
           </div>
 
-          <Button
-            onClick={handleSendText}
-            disabled={isLoading || !inputText.trim() || isRecording}
-            variant="primary"
-            size="lg"
-            className="min-w-[64px]"
-            aria-label="送信"
-          >
-            <Send className="h-5 w-5" />
-          </Button>
-
-          <VoiceButton
-            isRecording={isRecording}
-            disabled={isLoading}
-            onStart={startRecording}
-            onStop={stopRecording}
-          />
+          <p className="mt-3 text-xs text-center text-gray-500">
+            音声ボタンを押して話し、もう一度押して送信 | Enterで送信
+          </p>
         </div>
-
-        <p className="mt-2 text-xs text-center text-gray-500">
-          音声ボタンを押して話し、もう一度押して送信 | Enterで送信
-        </p>
       </div>
     </div>
   );

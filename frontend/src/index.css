@@ -4,25 +4,38 @@
 
 @layer base {
   :root {
-    font-family: 'Inter', 'Noto Sans JP', system-ui, -apple-system, sans-serif;
-    line-height: 1.5;
+    font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.7;
     font-weight: 400;
 
     color-scheme: light;
-    color: #111827;
+    color: #333333;
     background-color: #ffffff;
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    /* マネーフォワード風カラーパレット */
+    --color-primary: #00d09c;
+    --color-primary-dark: #00b386;
+    --color-primary-light: #e6faf5;
+    --color-secondary: #5bc8af;
+    --color-accent: #ff6b6b;
+    --color-text-primary: #333333;
+    --color-text-secondary: #6b7280;
+    --color-bg-base: #f7f9fa;
+    --color-bg-elevated: #ffffff;
+    --color-border: #e8ecef;
   }
 
   body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    background-color: #f9fafb;
+    background-color: var(--color-bg-base);
+    color: var(--color-text-primary);
   }
 
   * {

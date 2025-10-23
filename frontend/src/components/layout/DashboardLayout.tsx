@@ -1,5 +1,5 @@
 /**
- * DashboardLayout Component - Main application layout
+ * DashboardLayout Component - マネーフォワード風のレイアウト
  */
 
 import { ReactNode } from 'react';
@@ -22,7 +22,7 @@ export function DashboardLayout({
   notificationCount,
 }: DashboardLayoutProps) {
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-[#f7f9fa]">
       {/* Header */}
       <AppHeader
         userName={userName}
@@ -30,7 +30,7 @@ export function DashboardLayout({
       />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-hidden" role="main">
+      <main className="flex-1 overflow-y-auto" role="main">
         {children}
       </main>
 

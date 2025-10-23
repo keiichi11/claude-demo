@@ -14,61 +14,67 @@ export function RecordsPage() {
   const records: any[] = [];
 
   return (
-    <div className="h-full overflow-y-auto bg-gray-50">
-      <div className="p-4 space-y-4">
+    <div className="h-full overflow-y-auto bg-[#f7f9fa]">
+      <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">作業記録</h1>
+          <p className="text-sm text-gray-500">過去の作業履歴を検索・確認できます</p>
+        </div>
+
         {/* Search and Filter Bar */}
-        <Card padding="md">
-          <div className="space-y-3">
+        <Card padding="lg">
+          <div className="space-y-4">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="お客様名、住所で検索..."
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
               />
             </div>
 
             {/* Filters */}
-            <div className="flex gap-2 overflow-x-auto pb-2">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
               <button
                 onClick={() => setFilterStatus('all')}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
+                className={`px-5 py-2.5 rounded-xl whitespace-nowrap font-medium transition-all shadow-sm ${
                   filterStatus === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
                 }`}
               >
                 すべて
               </button>
               <button
                 onClick={() => setFilterStatus('today')}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
+                className={`px-5 py-2.5 rounded-xl whitespace-nowrap font-medium transition-all shadow-sm ${
                   filterStatus === 'today'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
                 }`}
               >
                 今日
               </button>
               <button
                 onClick={() => setFilterStatus('week')}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
+                className={`px-5 py-2.5 rounded-xl whitespace-nowrap font-medium transition-all shadow-sm ${
                   filterStatus === 'week'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
                 }`}
               >
                 今週
               </button>
               <button
                 onClick={() => setFilterStatus('month')}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
+                className={`px-5 py-2.5 rounded-xl whitespace-nowrap font-medium transition-all shadow-sm ${
                   filterStatus === 'month'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
                 }`}
               >
                 今月
@@ -80,7 +86,8 @@ export function RecordsPage() {
               variant="outline"
               leftIcon={<Download className="h-5 w-5" />}
               fullWidth
-              size="md"
+              size="lg"
+              className="border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50"
             >
               CSVエクスポート
             </Button>

@@ -1,5 +1,5 @@
 /**
- * NavigationBar Component - Tab-based navigation
+ * NavigationBar Component - マネーフォワード風のナビゲーション
  */
 
 import { ReactNode } from 'react';
@@ -33,29 +33,34 @@ export function NavigationBar({ activeTab, onTabChange }: NavigationBarProps) {
       role="navigation"
       aria-label="メインナビゲーション"
     >
-      <div className="flex justify-around">
-        {navItems.map((item) => {
-          const isActive = activeTab === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => onTabChange(item.id)}
-              className={clsx(
-                'flex-1 flex flex-col items-center justify-center py-3 px-2',
-                'min-h-[64px] transition-all duration-200',
-                'focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500',
-                isActive
-                  ? 'text-blue-600 bg-blue-50 border-t-2 border-blue-600'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              )}
-              aria-label={item.label}
-              aria-current={isActive ? 'page' : undefined}
-            >
-              <div className="mb-1">{item.icon}</div>
-              <span className="text-xs font-medium">{item.label}</span>
-            </button>
-          );
-        })}
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-around px-2">
+          {navItems.map((item) => {
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => onTabChange(item.id)}
+                className={clsx(
+                  'flex-1 flex flex-col items-center justify-center py-3 px-2',
+                  'min-h-[72px] transition-all duration-200 relative',
+                  'focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500',
+                  isActive
+                    ? 'text-emerald-600'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                )}
+                aria-label={item.label}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {isActive && (
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-emerald-500 rounded-b-full" />
+                )}
+                <div className="mb-1.5">{item.icon}</div>
+                <span className="text-xs font-medium">{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );

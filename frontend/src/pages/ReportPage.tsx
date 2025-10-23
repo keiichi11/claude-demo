@@ -18,10 +18,10 @@ interface PhotoItemProps {
 
 function PhotoItem({ url, type, onDelete }: PhotoItemProps) {
   const typeColors = {
-    before: 'border-blue-500 bg-blue-50',
-    during: 'border-yellow-500 bg-yellow-50',
-    after: 'border-green-500 bg-green-50',
-    trouble: 'border-red-500 bg-red-50',
+    before: 'border-blue-400 bg-blue-50',
+    during: 'border-emerald-400 bg-emerald-50',
+    after: 'border-teal-400 bg-teal-50',
+    trouble: 'border-orange-400 bg-orange-50',
   };
 
   const typeLabels = {
@@ -33,14 +33,14 @@ function PhotoItem({ url, type, onDelete }: PhotoItemProps) {
 
   return (
     <div className="relative group">
-      <div className={clsx('rounded-lg border-2 overflow-hidden', typeColors[type])}>
-        <img src={url} alt={typeLabels[type]} className="w-full h-32 object-cover" />
+      <div className={clsx('rounded-xl border-2 overflow-hidden shadow-sm hover:shadow-md transition-shadow', typeColors[type])}>
+        <img src={url} alt={typeLabels[type]} className="w-full h-36 object-cover" />
         <div className="absolute top-2 left-2">
           <Badge size="sm">{typeLabels[type]}</Badge>
         </div>
         <button
           onClick={onDelete}
-          className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
+          className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 shadow-lg"
           aria-label="写真を削除"
         >
           <Trash2 className="h-4 w-4" />
@@ -179,7 +179,7 @@ export function ReportPage() {
 
   if (!currentWorkOrder) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex items-center justify-center bg-[#f7f9fa]">
         <EmptyState
           icon="📋"
           title="作業案件を選択してください"
@@ -190,37 +190,37 @@ export function ReportPage() {
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-gray-50">
-      <div className="p-4 space-y-6 pb-24">
+    <div className="h-full overflow-y-auto bg-[#f7f9fa]">
+      <div className="max-w-7xl mx-auto px-6 py-8 space-y-6 pb-32">
         {/* Basic Info */}
-        <Card padding="md">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <Card padding="lg">
+          <h2 className="text-xl font-bold text-gray-900 mb-5 flex items-center">
             <span className="mr-2">📋</span>
             基本情報
           </h2>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center py-2 border-b border-gray-100">
-              <span className="text-sm text-gray-600">お客様</span>
-              <span className="font-medium">{currentWorkOrder.customer_name}</span>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center py-3 border-b border-gray-100">
+              <span className="text-sm text-gray-500 font-medium">お客様</span>
+              <span className="font-bold text-gray-900">{currentWorkOrder.customer_name}</span>
             </div>
-            <div className="flex justify-between items-center py-2 border-b border-gray-100">
-              <span className="text-sm text-gray-600">住所</span>
-              <span className="text-sm text-right">{currentWorkOrder.address}</span>
+            <div className="flex justify-between items-center py-3 border-b border-gray-100">
+              <span className="text-sm text-gray-500 font-medium">住所</span>
+              <span className="text-sm text-right text-gray-700">{currentWorkOrder.address}</span>
             </div>
-            <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-gray-600">機種</span>
+            <div className="flex justify-between items-center py-3">
+              <span className="text-sm text-gray-500 font-medium">機種</span>
               <Badge variant="info">{currentWorkOrder.model}</Badge>
             </div>
           </div>
         </Card>
 
         {/* Photos */}
-        <Card padding="md">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+        <Card padding="lg">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center">
               <span className="mr-2">📷</span>
               施工写真
-              <Badge variant="default" className="ml-2">
+              <Badge variant="default" className="ml-3">
                 {workPhotos.length}枚
               </Badge>
             </h2>
@@ -236,7 +236,7 @@ export function ReportPage() {
               description="カメラで撮影、またはファイルから選択してください"
             />
           ) : (
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-2 gap-4 mb-6">
               {workPhotos.map((photo) => (
                 <PhotoItem
                   key={photo.id}
@@ -258,12 +258,14 @@ export function ReportPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             <Button
               onClick={() => cameraInputRef.current?.click()}
               variant="primary"
               leftIcon={<Camera className="h-5 w-5" />}
               fullWidth
+              size="lg"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
             >
               カメラ
             </Button>
@@ -272,6 +274,8 @@ export function ReportPage() {
               variant="secondary"
               leftIcon={<Upload className="h-5 w-5" />}
               fullWidth
+              size="lg"
+              className="border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50"
             >
               ファイル
             </Button>
@@ -295,22 +299,22 @@ export function ReportPage() {
         </Card>
 
         {/* Materials */}
-        <Card padding="md">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <Card padding="lg">
+          <h2 className="text-xl font-bold text-gray-900 mb-5 flex items-center">
             <span className="mr-2">🔧</span>
             使用部材
           </h2>
 
           {usedMaterials.length > 0 && (
-            <div className="mb-4 space-y-2">
+            <div className="mb-5 space-y-3">
               {usedMaterials.map((material) => (
                 <div
                   key={material.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-50/50 rounded-xl border border-gray-100 hover:shadow-sm transition-shadow"
                 >
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">{material.material_name}</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="font-bold text-gray-900">{material.material_name}</p>
+                    <p className="text-sm text-gray-500 mt-1">
                       {material.quantity} {material.unit}
                     </p>
                   </div>
@@ -323,23 +327,23 @@ export function ReportPage() {
                         alert('部材の削除に失敗しました');
                       }
                     }}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2.5 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-5 w-5" />
                   </button>
                 </div>
               ))}
             </div>
           )}
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <Input
               label="部材名"
               value={materialName}
               onChange={(e) => setMaterialName(e.target.value)}
               placeholder="例: 冷媒配管 2分3分"
             />
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-3">
               <div className="col-span-2">
                 <Input
                   label="数量"
@@ -351,13 +355,13 @@ export function ReportPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   単位
                 </label>
                 <select
                   value={materialUnit}
                   onChange={(e) => setMaterialUnit(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
                 >
                   <option value="m">m</option>
                   <option value="個">個</option>
@@ -372,6 +376,8 @@ export function ReportPage() {
               variant="secondary"
               leftIcon={<Plus className="h-5 w-5" />}
               fullWidth
+              size="lg"
+              className="border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50"
             >
               部材を追加
             </Button>
@@ -379,8 +385,8 @@ export function ReportPage() {
         </Card>
 
         {/* Special Notes */}
-        <Card padding="md">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <Card padding="lg">
+          <h2 className="text-xl font-bold text-gray-900 mb-5 flex items-center">
             <span className="mr-2">📝</span>
             特記事項
           </h2>
@@ -389,33 +395,37 @@ export function ReportPage() {
             onChange={(e) => setSpecialNotes(e.target.value)}
             placeholder="トラブル、お客様からの要望、次回訪問が必要な事項などを記録..."
             rows={6}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-5 py-4 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent shadow-sm"
           />
         </Card>
       </div>
 
       {/* Fixed Bottom Actions */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-lg space-y-2">
-        <Button
-          onClick={handleSaveDraft}
-          variant="secondary"
-          leftIcon={<Save className="h-5 w-5" />}
-          fullWidth
-          size="lg"
-        >
-          下書き保存
-        </Button>
-        <Button
-          onClick={handleSubmitReport}
-          variant="primary"
-          leftIcon={<Send className="h-5 w-5" />}
-          fullWidth
-          size="lg"
-          loading={isSubmitting}
-          disabled={workPhotos.length < 4}
-        >
-          作業報告を送信
-        </Button>
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-lg">
+        <div className="max-w-7xl mx-auto px-6 py-5 space-y-3">
+          <Button
+            onClick={handleSaveDraft}
+            variant="secondary"
+            leftIcon={<Save className="h-5 w-5" />}
+            fullWidth
+            size="lg"
+            className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            下書き保存
+          </Button>
+          <Button
+            onClick={handleSubmitReport}
+            variant="primary"
+            leftIcon={<Send className="h-5 w-5" />}
+            fullWidth
+            size="lg"
+            loading={isSubmitting}
+            disabled={workPhotos.length < 4}
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-md"
+          >
+            作業報告を送信
+          </Button>
+        </div>
       </div>
     </div>
   );
