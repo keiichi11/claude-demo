@@ -330,45 +330,901 @@ Bot: 「冷媒配管4mを使用部材に追加しました」
 
 ---
 
-## 6. UI設計
+## 6. UI/UX設計（SaaSプロダクションレベル）
 
-### 6.1 画面構成（タブ方式）
+### 6.1 設計原則
 
-#### タブ1: 💬対話
-- 音声対話のメイン画面
-- チャット履歴表示
-- 🎤ボタン（プッシュ・トゥ・トーク）
-- 現在の案件情報（上部に常時表示）
+#### 6.1.1 プロダクトデザイン哲学
+```
+Core Principles:
+1. モバイルファースト: 現場作業者の主要デバイスはスマートフォン
+2. 片手操作: 手袋装着時、脚立上での操作を考慮
+3. 高速レスポンス: ネットワークが不安定な環境での使用
+4. プログレッシブディスクロージャー: 必要な情報を段階的に表示
+5. エラー防止 > エラー回復: 誤操作を未然に防ぐUX
+6. アクセシビリティ第一: WCAG 2.1 AAレベル準拠
+```
 
-#### タブ2: 📋作業
-- 作業手順チェックリスト
-- 工程の進捗表示
-- 各工程の詳細手順
-- 写真撮影ボタン
+#### 6.1.2 デザインシステム構築
+```typescript
+// カラーパレット（アクセシビリティ考慮）
+const colors = {
+  // Primary（CTA、重要アクション）
+  primary: {
+    50: '#eff6ff',   // 背景・ホバー
+    100: '#dbeafe',
+    500: '#3b82f6',  // メインブランドカラー（コントラスト比 4.5:1以上）
+    600: '#2563eb',  // ホバー
+    700: '#1d4ed8',  // アクティブ
+    900: '#1e3a8a',
+  },
 
-#### タブ3: 📸報告
-- 作業報告入力フォーム
-- 施工写真アップロード
-- 音声入力ボタン（各フィールドに配置）
-- 使用部材入力
-- お客様サイン欄
-- 下書き保存 / 報告送信ボタン
+  // Semantic Colors（状態表現）
+  success: '#10b981',  // 完了、成功
+  warning: '#f59e0b',  // 警告、注意
+  danger: '#ef4444',   // エラー、削除
+  info: '#06b6d4',     // 情報
 
-#### タブ4: 📊記録
-- 作業一覧（期間別、ステータス別）
-- 検索フィルタ
-- 作業詳細へのリンク
+  // Neutral（UI基本）
+  gray: {
+    50: '#f9fafb',   // 背景
+    100: '#f3f4f6',  // カード背景
+    200: '#e5e7eb',  // ボーダー
+    400: '#9ca3af',  // 非活性テキスト
+    600: '#4b5563',  // セカンダリテキスト
+    900: '#111827',  // プライマリテキスト
+  },
 
-### 6.2 レスポンシブデザイン
-- スマートフォン（縦持ち）を主要デバイスとする
-- タブレット（横持ち）でも利用可能
-- フォントサイズ: 16px以上（現場での視認性確保）
-- ボタンサイズ: 44x44px以上（手袋装着時でもタップ可能）
+  // 現場用高視認性カラー
+  highVisibility: {
+    orange: '#ff6b00',  // 高所作業警告
+    yellow: '#fbbf24',  // 注意喚起
+  }
+};
 
-### 6.3 アクセシビリティ
-- 音声読み上げ対応（視覚障害者対応）
-- ハイコントラストモード
-- フォントサイズ変更機能
+// タイポグラフィスケール
+const typography = {
+  fontFamily: {
+    sans: ['Inter', 'Noto Sans JP', 'system-ui', 'sans-serif'],
+    mono: ['JetBrains Mono', 'Consolas', 'monospace'],
+  },
+  fontSize: {
+    xs: '12px',    // キャプション
+    sm: '14px',    // ボディスモール
+    base: '16px',  // ボディ（最小サイズ）
+    lg: '18px',    // リード文
+    xl: '20px',    // 小見出し
+    '2xl': '24px', // セクション見出し
+    '3xl': '30px', // ページタイトル
+    '4xl': '36px', // ヒーロー
+  },
+  lineHeight: {
+    tight: 1.25,
+    normal: 1.5,
+    relaxed: 1.75,
+  },
+  fontWeight: {
+    normal: 400,
+    medium: 500,
+    semibold: 600,
+    bold: 700,
+  }
+};
+
+// スペーシングシステム（8px grid）
+const spacing = {
+  0: '0',
+  1: '4px',    // 0.5 unit
+  2: '8px',    // 1 unit
+  3: '12px',   // 1.5 unit
+  4: '16px',   // 2 unit
+  5: '20px',   // 2.5 unit
+  6: '24px',   // 3 unit
+  8: '32px',   // 4 unit
+  10: '40px',  // 5 unit
+  12: '48px',  // 6 unit
+  16: '64px',  // 8 unit
+};
+
+// シャドウシステム（奥行き表現）
+const shadows = {
+  sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+  md: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+  lg: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+  xl: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
+};
+
+// ボーダーラディウス
+const borderRadius = {
+  sm: '4px',   // 小要素（チップ、バッジ）
+  md: '8px',   // ボタン、カード
+  lg: '12px',  // モーダル、大カード
+  xl: '16px',  // ヒーローセクション
+  full: '9999px', // 円形（アバター、アイコンボタン）
+};
+
+// アニメーション定義
+const animation = {
+  duration: {
+    instant: '100ms',
+    fast: '200ms',
+    normal: '300ms',
+    slow: '500ms',
+  },
+  easing: {
+    easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
+    easeOut: 'cubic-bezier(0, 0, 0.2, 1)',
+    easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  }
+};
+```
+
+---
+
+### 6.2 コンポーネント設計
+
+#### 6.2.1 Atomic Design階層
+
+##### Atoms（原子）
+```
+- Button (Primary, Secondary, Danger, Ghost, Icon)
+- Input (Text, Number, Date, File)
+- Textarea
+- Select, Radio, Checkbox
+- Badge（ステータス表示）
+- Avatar（ユーザーアイコン）
+- Icon（Lucide React使用）
+- Spinner（ローディング）
+- Skeleton（コンテンツプレースホルダー）
+- Divider（区切り線）
+- Tooltip
+```
+
+##### Molecules（分子）
+```
+- FormField (Label + Input + ErrorMessage)
+- SearchBox (Input + Icon + ClearButton)
+- FileUploadArea (DragDrop + Button + Preview)
+- VoiceRecordButton (状態変化アニメーション付き)
+- PhotoThumbnail (Image + DeleteButton + ZoomAction)
+- MaterialInputRow (NameInput + QuantityInput + UnitSelect + AddButton)
+- StepIndicator (進捗ステップ表示)
+- ChatMessage (Avatar + Content + Timestamp)
+- EmptyState (Icon + Message + Action)
+```
+
+##### Organisms（有機体）
+```
+- AppHeader (Logo + UserMenu + Notifications)
+- NavigationBar (Tab Navigation)
+- ChatInterface (MessageList + InputArea + VoiceButton)
+- WorkOrderCard (Summary + Status + Actions)
+- PhotoGallery (Grid + Upload + Lightbox)
+- MaterialList (Table + AddForm + Total)
+- ChecklistPanel (Steps + Progress + Timer)
+- ReportFormSection (多段フォーム)
+- FilterPanel (検索・フィルタUI)
+```
+
+##### Templates（テンプレート）
+```
+- DashboardLayout (Header + Navigation + Content + FAB)
+- AuthLayout (Centered Card + Logo + Form)
+- DetailLayout (BackButton + Header + ScrollableContent + FixedFooter)
+- EmptyLayout (FullScreen EmptyState)
+```
+
+##### Pages（ページ）
+```
+- LoginPage
+- DashboardPage
+- WorkOrderListPage
+- WorkOrderDetailPage
+- ChatPage
+- ReportPage
+- RecordsPage
+- SettingsPage
+```
+
+---
+
+#### 6.2.2 主要コンポーネント詳細仕様
+
+##### 6.2.2.1 Button Component
+```typescript
+interface ButtonProps {
+  variant: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline';
+  size: 'sm' | 'md' | 'lg' | 'xl';
+  fullWidth?: boolean;
+  disabled?: boolean;
+  loading?: boolean;
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
+  children: ReactNode;
+  onClick?: () => void;
+  // アクセシビリティ
+  ariaLabel?: string;
+  ariaDescribedBy?: string;
+}
+
+// 実装要件
+- 最小タッチターゲットサイズ: 44x44px (Apple HIG準拠)
+- ローディング状態でSpinner表示、テキスト保持（レイアウトシフト防止）
+- disabled時はaria-disabled、フォーカス不可
+- キーボードナビゲーション対応（Enter, Space）
+- ホバー・アクティブ状態の明確なフィードバック
+- Rippleエフェクト（Material Design風）
+```
+
+##### 6.2.2.2 VoiceRecordButton Component
+```typescript
+interface VoiceRecordButtonProps {
+  onRecordStart: () => void;
+  onRecordStop: (audioBlob: Blob) => void;
+  disabled?: boolean;
+  maxDuration?: number; // 最大録音時間（秒）
+}
+
+// UI状態遷移
+Idle → Recording → Processing → Complete/Error
+
+// ビジュアルフィードバック
+- Idle: 🎤マイクアイコン、グレー
+- Recording: 🔴録音中、赤パルスアニメーション、経過時間表示
+- Processing: Spinner + 「認識中...」
+- Error: ⚠️エラーメッセージ、再試行ボタン
+
+// アクセシビリティ
+- aria-live="polite" で状態変化を読み上げ
+- 最大録音時間に達したら自動停止 + 音声フィードバック
+```
+
+##### 6.2.2.3 ChatInterface Component
+```typescript
+interface ChatInterfaceProps {
+  messages: Message[];
+  onSendText: (text: string) => Promise<void>;
+  onSendVoice: (audio: Blob) => Promise<void>;
+  isLoading: boolean;
+  workOrderContext?: WorkOrder;
+}
+
+// レイアウト構造
+<ChatInterface>
+  <ContextHeader workOrder={context} />
+  <MessageList>
+    {messages.map(msg => (
+      <ChatMessage
+        role={msg.role}
+        content={msg.content}
+        timestamp={msg.timestamp}
+        avatar={msg.role === 'user' ? userAvatar : aiAvatar}
+      />
+    ))}
+    {isLoading && <TypingIndicator />}
+    <div ref={scrollAnchor} />
+  </MessageList>
+  <InputArea>
+    <TextInput onEnter={handleSend} />
+    <SendButton disabled={!text && !isRecording} />
+    <VoiceRecordButton />
+  </InputArea>
+</ChatInterface>
+
+// UX改善
+- 新メッセージ到着時、自動スクロール（スムーズアニメーション）
+- ユーザーが手動スクロール中は自動スクロール無効化
+- 「下にスクロール」FAB表示（新メッセージあり時）
+- メッセージ入力中の下書き保存（localStorage）
+- 送信失敗時の再試行UI
+- コピー、共有アクション
+```
+
+##### 6.2.2.4 PhotoGallery Component
+```typescript
+interface PhotoGalleryProps {
+  photos: Photo[];
+  onUpload: (file: File, type: PhotoType) => Promise<void>;
+  onDelete: (photoId: string) => Promise<void>;
+  minPhotos?: number; // 最低枚数（検証用）
+  maxPhotos?: number; // 最大枚数
+}
+
+// レイアウト
+- Grid Layout (2列 on mobile, 3-4列 on tablet)
+- Masonry Layout（縦横比が異なる場合）
+- Drag & Drop対応（react-dropzone使用）
+- ファイル選択 + カメラ直接起動の両対応
+
+// 写真タイプ別UI
+- 施工前（青ボーダー）
+- 施工中（黄ボーダー）
+- 施工後（緑ボーダー）
+- トラブル（赤ボーダー）
+
+// インタラクション
+- サムネイルクリック → Lightbox表示（フルスクリーン）
+- Lightbox内でスワイプナビゲーション
+- ピンチズーム対応
+- 削除確認モーダル（誤操作防止）
+- アップロード進捗バー
+- 画像圧縮（クライアント側、1MB以下に）
+
+// アクセシビリティ
+- alt属性に写真タイプ + 撮影日時
+- キーボードナビゲーション（矢印キー）
+```
+
+---
+
+### 6.3 画面構成（詳細）
+
+#### 6.3.1 ログイン画面
+```
+Layout: AuthLayout（中央配置、背景グラデーション）
+
+Components:
+- Logo（アニメーション付き）
+- LoginForm
+  - EmailInput（バリデーション: RFC 5322）
+  - PasswordInput（Show/Hide Toggle）
+  - RememberMeCheckbox
+  - LoginButton（ローディング状態）
+  - ForgotPasswordLink
+- ErrorAlert（ログイン失敗時）
+- FooterLinks（利用規約、プライバシーポリシー）
+
+UX:
+- オートフォーカス（Email入力）
+- Enter送信対応
+- エラーメッセージ（フィールド下に表示）
+- パスワードリセットフロー
+- 生体認証対応（WebAuthn）
+```
+
+#### 6.3.2 ダッシュボード画面
+```
+Layout: DashboardLayout
+
+Components:
+1. AppHeader
+   - ロゴ
+   - 通知アイコン（未読バッジ）
+   - ユーザーメニュー（アバター + ドロップダウン）
+
+2. QuickStats（今日の作業サマリー）
+   - 今日の予定件数
+   - 完了件数
+   - 平均作業時間
+   - アニメーションカウンター
+
+3. UpcomingWorkOrders
+   - 今日・明日の予定リスト
+   - カード形式（お客様名、住所、機種、開始時刻）
+   - ステータスバッジ
+   - 「作業開始」CTAボタン
+
+4. RecentReports
+   - 直近5件の作業報告
+   - サムネイル + ステータス
+   - 「詳細を見る」リンク
+
+5. QuickActions（FAB Menu）
+   - 新規案件作成
+   - 作業報告開始
+   - チャット起動
+
+Interaction:
+- Pull-to-Refresh（最新情報取得）
+- Skeletonローディング
+- Empty State（予定なし）
+```
+
+#### 6.3.3 作業案件一覧画面
+```
+Layout: DashboardLayout
+
+Components:
+1. SearchBar
+   - キーワード検索（お客様名、住所）
+   - 音声検索対応
+
+2. FilterPanel
+   - ステータスフィルタ（予定、作業中、完了）
+   - 日付範囲フィルタ（Today, This Week, This Month, Custom）
+   - ソート（日付、ステータス、お客様名）
+
+3. WorkOrderList
+   - 無限スクロール or ページネーション
+   - カード形式
+   - スワイプアクション（編集、削除）
+
+4. WorkOrderCard
+   - お客様名（太字）
+   - 住所（アイコン + テキスト）
+   - 機種（バッジ）
+   - 予定日時
+   - ステータスバッジ
+   - 進捗インジケーター（作業中の場合）
+   - アクションボタン
+
+Interaction:
+- カードタップ → 詳細画面
+- スワイプ左 → 削除
+- スワイプ右 → 編集
+- 長押し → 複数選択モード
+```
+
+#### 6.3.4 チャット画面（作業支援対話）
+```
+Layout: DetailLayout（フルスクリーン）
+
+Components:
+1. ContextHeader
+   - 戻るボタン
+   - お客様名
+   - 機種情報
+   - 現在の工程バッジ
+
+2. MessageList
+   - 時系列表示（下が最新）
+   - ユーザーメッセージ（右寄せ、青背景）
+   - AIメッセージ（左寄せ、白背景）
+   - タイムスタンプ（グループ化）
+   - TypingIndicator（AI応答待ち）
+   - SafetyWarningCard（警告時は目立つUI）
+
+3. InputArea（下部固定）
+   - TextInput（複数行対応、自動高さ調整）
+   - SendButton
+   - VoiceRecordButton
+   - AttachmentButton（写真添付）
+
+4. SuggestedQuestions（初回表示）
+   - よくある質問チップ
+   - タップで即送信
+
+Interaction:
+- メッセージ長押し → コピー
+- AI回答に「いいね」「わかりにくい」フィードバック
+- 音声再生ボタン（TTS）
+- スクロール位置保持
+```
+
+#### 6.3.5 作業報告画面
+```
+Layout: DetailLayout
+
+Components:
+1. ProgressStepper（上部）
+   - Step 1: 基本情報
+   - Step 2: 施工写真
+   - Step 3: 使用部材
+   - Step 4: 特記事項
+   - Step 5: 確認・送信
+
+2. Step別フォーム
+   【Step 1: 基本情報】
+   - お客様名（自動入力、編集不可）
+   - 作業日時（自動記録）
+   - 作業時間（自動計算、手動調整可）
+   - 作業内容サマリー（テキスト or 音声入力）
+
+   【Step 2: 施工写真】
+   - PhotoGallery
+   - タイプ別アップロード（施工前・中・後・トラブル）
+   - 最低4枚の検証
+   - カメラ/ギャラリー選択
+
+   【Step 3: 使用部材】
+   - MaterialList
+   - 追加フォーム（音声入力対応）
+   - 合計数量表示
+
+   【Step 4: 特記事項】
+   - リッチテキストエディタ
+   - 音声入力ボタン
+   - テンプレート挿入（よくある記載事項）
+
+   【Step 5: 確認・送信】
+   - プレビュー（PDF風）
+   - お客様サイン入力（Canvas）
+   - 下書き保存 / 送信ボタン
+
+Interaction:
+- 各Stepでバリデーション
+- 未入力項目にエラー表示
+- 下書き自動保存（30秒毎）
+- 送信前確認モーダル
+- 送信成功アニメーション
+```
+
+#### 6.3.6 作業記録一覧画面
+```
+Layout: DashboardLayout
+
+Components:
+1. FilterBar
+   - 期間フィルタ（Today, Week, Month, Custom）
+   - ステータスフィルタ
+   - エクスポートボタン（CSV, PDF）
+
+2. RecordsList
+   - カード or テーブル表示切替
+   - お客様名、日付、ステータス、作業時間
+   - サムネイル（施工写真1枚目）
+
+3. RecordDetail（モーダル or 別画面）
+   - 基本情報
+   - 施工写真ギャラリー
+   - 使用部材リスト
+   - 特記事項
+   - 対話履歴
+   - お客様サイン
+   - PDF出力ボタン
+   - メール送信ボタン
+
+Interaction:
+- 検索（お客様名、住所）
+- ソート（日付、作業時間）
+- カードタップ → 詳細表示
+- スワイプアクション（PDF出力、メール送信）
+```
+
+---
+
+### 6.4 レスポンシブデザイン戦略
+
+#### 6.4.1 ブレークポイント
+```typescript
+const breakpoints = {
+  sm: '640px',   // スマートフォン（縦）
+  md: '768px',   // タブレット（縦）
+  lg: '1024px',  // タブレット（横）、小型ノートPC
+  xl: '1280px',  // デスクトップ
+  '2xl': '1536px', // 大型ディスプレイ
+};
+
+// 使用例
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+```
+
+#### 6.4.2 デバイス別最適化
+
+##### スマートフォン（< 640px）
+- Single Column Layout
+- フルスクリーンモーダル
+- Bottom Sheet（下からスライドアップ）
+- タブナビゲーション（画面下部）
+- FAB（Floating Action Button）
+- ハンバーガーメニュー
+
+##### タブレット（640px - 1024px）
+- Two Column Layout（一覧 + 詳細）
+- Side Navigation（左サイドバー）
+- Split View（iPad風）
+- ポップオーバーモーダル
+
+##### デスクトップ（> 1024px）
+- Three Column Layout
+- Persistent Navigation（常時表示）
+- Hover Interactions
+- Keyboard Shortcuts
+- Context Menu（右クリック）
+
+---
+
+### 6.5 アクセシビリティ（WCAG 2.1 AA準拠）
+
+#### 6.5.1 キーボードナビゲーション
+```
+- Tab順序の論理的な設定（tabindex管理）
+- フォーカス可視化（2px solid outline）
+- Skipリンク（「メインコンテンツへ」）
+- Escape → モーダル閉じる
+- Arrow Keys → リスト・タブナビゲーション
+- Enter/Space → ボタン・リンク起動
+```
+
+#### 6.5.2 スクリーンリーダー対応
+```typescript
+// ARIA属性の適切な使用
+<button
+  aria-label="作業報告を送信"
+  aria-describedby="report-submit-desc"
+  aria-pressed={isPressed}
+>
+  送信
+</button>
+
+<div id="report-submit-desc" className="sr-only">
+  作業報告を送信します。送信後は編集できません。
+</div>
+
+// ライブリージョン（動的コンテンツ変化の通知）
+<div role="status" aria-live="polite" aria-atomic="true">
+  {successMessage}
+</div>
+
+// ランドマーク
+<header role="banner">...</header>
+<nav role="navigation" aria-label="メインナビゲーション">...</nav>
+<main role="main">...</main>
+<footer role="contentinfo">...</footer>
+```
+
+#### 6.5.3 色覚多様性対応
+```
+- カラーだけに依存しない情報伝達
+  例: エラー → 赤色 + アイコン + テキスト
+- コントラスト比4.5:1以上（テキスト）
+- コントラスト比3:1以上（UIコンポーネント）
+- カラーブラインドシミュレーション（Chromatic使用）
+```
+
+#### 6.5.4 フォントサイズ・拡大対応
+```
+- 基準フォントサイズ16px以上
+- rem単位使用（px禁止）
+- 200%ズームでレイアウト崩れなし
+- テキストのみ拡大設定対応
+```
+
+---
+
+### 6.6 パフォーマンス最適化
+
+#### 6.6.1 初期ロード最適化
+```
+- Code Splitting（React.lazy + Suspense）
+- Route-based Splitting（ページ単位）
+- Component-based Splitting（大型コンポーネント）
+- Tree Shaking（未使用コード削除）
+- Bundle Size予算設定（< 200KB初期バンドル）
+- CSS-in-JS → 必要最小限のスタイルのみ
+```
+
+#### 6.6.2 画像最適化
+```
+- WebP形式優先（フォールバックJPEG）
+- レスポンシブ画像（srcset, sizes）
+- Lazy Loading（Intersection Observer）
+- 画像圧縮（クライアント側）
+  - 施工写真: 1920x1080、品質80%
+  - サムネイル: 400x300、品質70%
+- BlurHash Placeholder
+```
+
+#### 6.6.3 レンダリング最適化
+```typescript
+// 仮想スクロール（react-window）
+import { FixedSizeList } from 'react-window';
+
+<FixedSizeList
+  height={600}
+  itemCount={workOrders.length}
+  itemSize={80}
+>
+  {({ index, style }) => (
+    <WorkOrderCard data={workOrders[index]} style={style} />
+  )}
+</FixedSizeList>
+
+// メモ化
+const MemoizedChatMessage = React.memo(ChatMessage, (prev, next) => {
+  return prev.content === next.content && prev.timestamp === next.timestamp;
+});
+
+// useMemo, useCallback適切使用
+const sortedOrders = useMemo(
+  () => workOrders.sort((a, b) => b.scheduledDate - a.scheduledDate),
+  [workOrders]
+);
+```
+
+#### 6.6.4 ネットワーク最適化
+```
+- API Response Caching（React Query）
+- Optimistic UI Update（楽観的更新）
+- Request Batching
+- Debounce/Throttle（検索入力）
+- WebSocket（リアルタイム通知）
+- Service Worker（オフライン対応）
+```
+
+---
+
+### 6.7 アニメーション・インタラクションデザイン
+
+#### 6.7.1 マイクロインタラクション
+```css
+/* ボタンホバー */
+.button {
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+.button:active {
+  transform: translateY(0);
+}
+
+/* カード展開 */
+@keyframes expand {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* スケルトンローディング */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+```
+
+#### 6.7.2 ページ遷移アニメーション
+```typescript
+// Framer Motion使用
+import { motion, AnimatePresence } from 'framer-motion';
+
+const pageVariants = {
+  initial: { opacity: 0, x: 20 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -20 },
+};
+
+<AnimatePresence mode="wait">
+  <motion.div
+    key={location.pathname}
+    variants={pageVariants}
+    initial="initial"
+    animate="animate"
+    exit="exit"
+    transition={{ duration: 0.3 }}
+  >
+    <Routes>...</Routes>
+  </motion.div>
+</AnimatePresence>
+```
+
+#### 6.7.3 フィードバックアニメーション
+```
+- 送信成功 → ✓チェックマーク展開 + グリーンフラッシュ
+- 削除 → カード左スライドアウト + フェードアウト
+- いいね → ハートバウンス
+- エラー → シェイクアニメーション
+- ローディング → スピナー or スケルトン
+```
+
+---
+
+### 6.8 エラーハンドリング・ユーザーフィードバック
+
+#### 6.8.1 エラー表示パターン
+```typescript
+// インラインエラー（フォームフィールド）
+<FormField error="メールアドレスの形式が正しくありません" />
+
+// トースト通知（一時的な成功・エラー）
+<Toast
+  type="error"
+  message="ネットワークエラーが発生しました"
+  action={{ label: '再試行', onClick: retry }}
+  duration={5000}
+/>
+
+// フルページエラー（致命的エラー）
+<ErrorBoundary
+  fallback={
+    <ErrorPage
+      code={500}
+      message="予期しないエラーが発生しました"
+      action={{ label: 'ホームへ戻る', href: '/' }}
+    />
+  }
+>
+  <App />
+</ErrorBoundary>
+
+// Empty State（データなし）
+<EmptyState
+  icon={<InboxIcon />}
+  title="作業案件がありません"
+  description="新しい案件を作成してください"
+  action={{ label: '案件を作成', onClick: createWorkOrder }}
+/>
+```
+
+#### 6.8.2 プログレスフィードバック
+```
+- ボタンローディング（Spinner + 無効化）
+- プログレスバー（ファイルアップロード）
+- スケルトンスクリーン（初期ロード）
+- インラインスピナー（データ更新）
+- 楽観的UI更新（即座にUI反映、バックグラウンド同期）
+```
+
+---
+
+### 6.9 テーマ・ダークモード対応
+
+```typescript
+// CSS Variables使用
+:root {
+  --color-background: #ffffff;
+  --color-text-primary: #111827;
+  --color-border: #e5e7eb;
+}
+
+[data-theme="dark"] {
+  --color-background: #1f2937;
+  --color-text-primary: #f9fafb;
+  --color-border: #374151;
+}
+
+// React Context
+const ThemeContext = createContext<ThemeContextType>({
+  theme: 'light',
+  toggleTheme: () => {},
+});
+
+// システム設定優先
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+```
+
+---
+
+### 6.10 実装優先順位
+
+#### Phase 1: Core UI Foundation（1週間）
+- デザインシステム構築（色、タイポグラフィ、スペーシング）
+- Atomic Components（Button, Input, Card, etc.）
+- Layout Templates
+- Navigation Structure
+
+#### Phase 2: Main Features（2週間）
+- ダッシュボード
+- 作業案件一覧・詳細
+- チャット画面
+- 作業報告画面（基本）
+
+#### Phase 3: Advanced Features（1週間）
+- 写真ギャラリー（Lightbox）
+- 音声入力UI
+- オフライン対応UI
+- アニメーション
+
+#### Phase 4: Polish & Optimization（1週間）
+- アクセシビリティ改善
+- パフォーマンス最適化
+- レスポンシブ調整
+- ダークモード
 
 ---
 

@@ -6,12 +6,14 @@ import { create } from 'zustand';
 import type { WorkOrder, WorkReport, WorkPhoto, UsedMaterial } from '@/types';
 
 interface WorkState {
+  workOrders: WorkOrder[];
   currentWorkOrder: WorkOrder | null;
   currentWorkReport: WorkReport | null;
   workPhotos: WorkPhoto[];
   usedMaterials: UsedMaterial[];
 
   // アクション
+  setWorkOrders: (workOrders: WorkOrder[]) => void;
   setCurrentWorkOrder: (workOrder: WorkOrder | null) => void;
   setCurrentWorkReport: (workReport: WorkReport | null) => void;
   addWorkPhoto: (photo: WorkPhoto) => void;
@@ -23,10 +25,13 @@ interface WorkState {
 }
 
 export const useWorkStore = create<WorkState>((set) => ({
+  workOrders: [],
   currentWorkOrder: null,
   currentWorkReport: null,
   workPhotos: [],
   usedMaterials: [],
+
+  setWorkOrders: (workOrders) => set({ workOrders }),
 
   setCurrentWorkOrder: (workOrder) => set({ currentWorkOrder: workOrder }),
 

@@ -21,7 +21,26 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 30000, // 30 seconds
 });
+
+// エラーハンドリングインターセプター
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      // サーバーがエラーレスポンスを返した
+      const message = error.response.data?.detail || error.response.data?.message || 'サーバーエラーが発生しました';
+      throw new Error(message);
+    } else if (error.request) {
+      // リクエストは送信されたがレスポンスがない
+      throw new Error('サーバーに接続できません。ネットワークを確認してください。');
+    } else {
+      // リクエスト設定時のエラー
+      throw new Error('リクエストの送信に失敗しました');
+    }
+  }
+);
 
 // チャットAPI
 export const chatApi = {
